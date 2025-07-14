@@ -3,31 +3,65 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unistd.h>
 
 #include "process.h"
+#include "linux_parser.h"
 
 using std::string;
 using std::to_string;
 using std::vector;
 
-// TODO: Return this process's ID
-int Process::Pid() { return 0; }
+Process::Process(int pid) : pid_(pid), cmdline_(LinuxParser::Command(pid)),
+                            uid_(LinuxParser::Uid(pid)),
+                            user_(LinuxParser::GetUserById(uid_)),
+                            ram_(LinuxParser::Ram(pid)),
+                            stat_(LinuxParser::GetProcStat(pid)){}
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
 
-// TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+int Process::Pid() { return pid_; }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+float Process::CpuUtilization()  const{
+   float totalTimeSec = (stat_.utime + stat_.stime) / sysconf(_SC_CLK_TCK);
+   float cpu_usage = totalTimeSec  / UpTime();
 
-// TODO: Return the user (name) that generated this process
-string Process::User() { return string(); }
+   return cpu_usage;
+}
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+string Process::Command() {
+   if (cmdline_ != "")
+      return cmdline_;
+   else
+      return stat_.fname;
+}
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+string Process::Ram() {
+
+   string suffix("kB");
+   auto ram = ram_;
+
+   if (ram/1024)
+   {
+      ram = ram / 1024;
+      suffix = "G";
+   }
+
+return std::to_string(ram) + suffix;
+}
+
+string Process::User() { return user_; }
+
+long int Process::UpTime() const{
+   long systemUpTime = LinuxParser::UpTime();
+   long secondsAfterBoot = stat_.starttime / sysconf(_SC_CLK_TCK);
+   return systemUpTime - secondsAfterBoot;
+}
+
+bool Process::operator<(Process const& a) const {
+
+   return (this->CpuUtilization() < a.CpuUtilization());
+}
+bool Process::operator>(Process const& a) const {
+
+   return (this->CpuUtilization() > a.CpuUtilization());
+}
