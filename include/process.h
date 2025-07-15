@@ -24,7 +24,6 @@ class Process {
     std::string cmdline_;
     std::string uid_;
     std::string user_;
-    unsigned long ram_;
     LinuxParser::ProcStat stat_;
 };
 

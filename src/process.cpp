@@ -15,7 +15,6 @@ using std::vector;
 Process::Process(int pid) : pid_(pid), cmdline_(LinuxParser::Command(pid)),
                             uid_(LinuxParser::Uid(pid)),
                             user_(LinuxParser::GetUserById(uid_)),
-                            ram_(LinuxParser::Ram(pid)),
                             stat_(LinuxParser::GetProcStat(pid)){}
 
 
@@ -37,13 +36,20 @@ string Process::Command() {
 
 string Process::Ram() {
 
-   string suffix("kB");
-   auto ram = ram_;
+   auto ram = LinuxParser::Ram(pid_);
+
+   string suffix(" kB");
 
    if (ram/1024)
    {
       ram = ram / 1024;
-      suffix = "G";
+      suffix = " Mb";
+   }
+
+   if (ram/1024)
+   {
+      ram = ram / 1024;
+      suffix = " Gb";
    }
 
 return std::to_string(ram) + suffix;
@@ -65,3 +71,5 @@ bool Process::operator>(Process const& a) const {
 
    return (this->CpuUtilization() > a.CpuUtilization());
 }
+
+

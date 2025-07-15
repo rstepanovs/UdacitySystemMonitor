@@ -10,6 +10,8 @@ int main() {
   Logger& logger = Logger::getInstance();
   logger.setLogLevel(LogLevel::DEBUG);
   logger.setLogFile(logFilename);
+
   System system;
+
   NCursesDisplay::Display(system);
 }

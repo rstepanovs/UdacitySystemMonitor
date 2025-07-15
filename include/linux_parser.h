@@ -55,10 +55,6 @@ std::string Command(int pid);
 unsigned long Ram(int pid);
 std::string Uid(int pid);
 std::string GetUserById(std::string uid);
-//long int UpTime(int pid);
-
-
-
 
 struct ProcStat
 {
