@@ -116,7 +116,7 @@ std::vector<string> getVector(string content, string p)
    std::vector<string> results;
    if (std::regex_search(content, match, pattern))
    {
-      for (auto i = 1; i < match.size(); i++)
+      for (std::size_t i = 1; i < match.size(); i++)
       {
          results.push_back(match[i].str());
       }
