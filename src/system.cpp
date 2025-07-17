@@ -73,7 +73,7 @@ void System::RefreshProcesses()
   if (!addedPids.empty()) {
 
     for (int pid: addedPids) {
-      processes_.push_back(Process(pid));
+      processes_.emplace_back(Process(pid));
     }
   }
 
