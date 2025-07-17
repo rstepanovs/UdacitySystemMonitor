@@ -38,6 +38,9 @@ string Process::Ram() {
 
    auto ram = LinuxParser::Ram(pid_);
 
+   //Expected memory in MB, so we don't need the code below
+
+/*
    string suffix(" kB");
 
    if (ram/1024)
@@ -52,7 +55,11 @@ string Process::Ram() {
       suffix = " Gb";
    }
 
+
 return std::to_string(ram) + suffix;
+*/
+
+   return std::to_string(ram / 1024);
 }
 
 string Process::User() { return user_; }

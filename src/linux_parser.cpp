@@ -262,7 +262,7 @@ string Command(int pid)
    std::ifstream stream(fname);
    if (stream.is_open())
    {
-      std::getline(stream, line);
+      std::getline(stream, line, '\0');
    }
    else
    {
@@ -275,8 +275,9 @@ unsigned long Ram(int pid)
 {
    string path(kProcDirectory + "/" + std::to_string(pid) + kStatusFilename);
    string content = getFileContent(path);
-   string pattern("VmSize:[[:space:]]([[:digit:]]+)[[:space:]]kB");
+   string pattern("VmRSS:[[:space:]]+([[:digit:]]+)[[:space:]]kB");
    string val = getValue(content, pattern);
+   //Log(LogLevel::DEBUG, "Got VmRSS value for pid " + std::to_string(pid) + " :"+ val);
    unsigned long ram = (val == "" ? 0 : std::stoul(val));
    return ram;
 }
@@ -300,7 +301,7 @@ long UpTime()
 
    long val = std::stol(getValue(content, pattern));
 
-   Log(LogLevel::DEBUG, "UpTime return " + std::to_string(val));
+   //Log(LogLevel::DEBUG, "UpTime return " + std::to_string(val));
 
    return val;
 }
